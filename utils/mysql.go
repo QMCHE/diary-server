@@ -2,6 +2,9 @@ package utils
 
 import (
 	"database/sql"
+
+	// MySQL driver
+	_ "github.com/go-sql-driver/mysql"
 )
 
 // DBConnect returns db object
