@@ -2,7 +2,7 @@ package models
 
 import (
 	"database/sql"
-	"fmt"
+	"log"
 	"time"
 
 	"github.com/QMCHE/diary-server/utils"
@@ -24,7 +24,9 @@ func IsUserExists(userID, password string) bool {
 	db := utils.DBConnect()
 	defer db.Close()
 
-	return db.QueryRow("SELECT userId, password FROM user").Scan(&userID, &password) != nil
+	var user string
+	err := db.QueryRow("SELECT userId FROM user WHERE userId=? AND password=?", userID, password).Scan(&user)
+	return err == nil
 }
 
 // IsUniqueUserID checks userId is unique
@@ -32,7 +34,7 @@ func IsUniqueUserID(userID string) bool {
 	db := utils.DBConnect()
 	defer db.Close()
 
-	return db.QueryRow("SELECT username FROM user").Scan(&userID) == nil
+	return db.QueryRow("SELECT username FROM user").Scan(&userID) != nil
 }
 
 // InsertUser inserts user to DB
@@ -57,9 +59,10 @@ func GetUserInfoByID(id int) *sql.Rows {
 	for user.Next() {
 		err := user.Scan(&u.ID, &u.Name, &u.UserID, &u.Password, &u.Created, &u.Updated, &u.Diaries)
 		if err != nil {
-			fmt.Print(err, "\n")
+			log.Print(err)
+			return nil
 		}
-		fmt.Print(u, "\n")
+		log.Print(u)
 	}
 	return user
 }
