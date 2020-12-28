@@ -42,7 +42,7 @@ func InsertUser(name, userID, password string) error {
 	db := utils.DBConnect()
 	defer db.Close()
 
-	_, err := db.Exec("INSERT INTO user VALUES (?, ?, ?)", name, userID, password)
+	_, err := db.Exec("INSERT INTO user (name, userId, password) VALUES (?, ?, ?)", name, userID, password)
 	return err
 }
 
