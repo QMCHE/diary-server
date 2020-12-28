@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"log"
 	"net/http"
 	"strings"
 
@@ -61,6 +62,7 @@ func Register(c *gin.Context) {
 
 	// If user insertion fails
 	if err != nil {
+		log.Print(err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Register failed",
 		})
