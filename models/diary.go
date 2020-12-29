@@ -1,6 +1,7 @@
 package models
 
 import (
+	"log"
 	"time"
 
 	"github.com/QMCHE/diary-server/utils"
@@ -21,7 +22,10 @@ func InsertDiary(title, content string) error {
 	db := utils.DBConnect()
 	defer db.Close()
 
-	_, err := db.Exec("INSERT INTO diary VALUES (?, ?)", &title, &content)
+	_, err := db.Exec("INSERT INTO diary (title, content) VALUES (?, ?)", &title, &content)
+	if err != nil {
+		log.Print(err)
+	}
 	return err
 }
 
@@ -30,7 +34,10 @@ func UpdateDiary(id int, title, content string) error {
 	db := utils.DBConnect()
 	defer db.Close()
 
-	_, err := db.Exec("UPDATE diary SET title=? content=? WHERE id=?", &title, &content, &id)
+	_, err := db.Exec("UPDATE diary SET title=?, content=? WHERE id=?", &title, &content, &id)
+	if err != nil {
+		log.Panic(err)
+	}
 	return err
 }
 
@@ -40,5 +47,8 @@ func DeleteDiary(id int) error {
 	defer db.Close()
 
 	_, err := db.Exec("DELETE FROM diary WHERE id=?", &id)
+	if err != nil {
+		log.Print(err)
+	}
 	return err
 }
