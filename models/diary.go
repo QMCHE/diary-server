@@ -1,30 +1,41 @@
 package models
 
 import (
-	"database/sql"
-	"time"
+	"log"
 
 	"github.com/QMCHE/diary-server/utils"
+	"gorm.io/gorm"
 )
 
 // Diary is struct of diary
 type Diary struct {
-	ID      int       `db:"id" json:"id" xml:"id"`
-	Title   string    `db:"title" json:"title" xml:"title"`
-	Content string    `db:"content" json:"content" xml:"content"`
-	Author  string    `db:"author" json:"author" xml:"author"`
-	Created time.Time `db:"created_at" json:"created_at" xml:"created_at"`
-	Updated time.Time `db:"updated_at" json:"updated_at" xml:"updated_at"`
+	gorm.Model
+	Title   string
+	Content string
+	Author  User
 }
 
 // GetAllDiaries returns all diaries in DB
-func GetAllDiaries() (*sql.Rows, error) {
+func GetAllDiaries() ([]Diary, error) {
 	db := utils.DBConnect()
 	defer db.Close()
 
 	rows, err := db.Query("SELECT * FROM diary")
+	if err != nil {
+		log.Print(err)
+		return nil, err
+	}
 
-	return rows, err
+	diaries := []Diary{}
+
+	for rows.Next() {
+		var id, title, content, author, created, updated string
+		if err := rows.Scan(&id, &title, &content, &author, &created, &updated); err != nil {
+			return nil, err
+		}
+		diaries = append(diaries, Diary{id, title, content, author, created, updated})
+	}
+
 }
 
 // InsertDiary inserts diary to DB

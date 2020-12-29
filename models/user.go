@@ -3,20 +3,18 @@ package models
 import (
 	"database/sql"
 	"log"
-	"time"
 
 	"github.com/QMCHE/diary-server/utils"
+	"gorm.io/gorm"
 )
 
 // User is struct of user
 type User struct {
-	ID       int       `db:"id" json:"id" xml:"id"`
-	Name     string    `db:"name" json:"name" xml:"name"`
-	UserID   string    `db:"userId" json:"userId" xml:"userId"`
-	Password string    `db:"password" json:"password" xml:"password"`
-	Created  time.Time `db:"created_at" json:"created_at" xml:"create_at"`
-	Updated  time.Time `db:"updated_at" json:"updated_at" xml:"update_at"`
-	Diaries  []Diary   `db:"diaries" json:"diaries" xml:"diaries"`
+	gorm.Model
+	Name     string
+	UserID   string
+	Password string
+	Diaries  []Diary
 }
 
 // IsUserExists checks user exist
