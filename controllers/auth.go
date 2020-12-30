@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/QMCHE/diary-server/models"
+	"github.com/QMCHE/diary-server/utils"
 	"github.com/gin-gonic/gin"
 )
 
@@ -14,18 +15,20 @@ func Login(c *gin.Context) {
 	userID := c.PostForm("userId")
 	password := c.PostForm("password")
 
-	// Check the parameters is not empty
 	if strings.Trim(userID, " ") == "" || strings.Trim(password, " ") == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Parameter(s) can't be empty",
+			"message": "Parameter(s) can't be empty",
 		})
 		return
 	}
 
-	// Check the user not exists
-	if !models.IsUserExists(userID, password) {
+	db := utils.DBConnect()
+
+	err := models.IsUserExists(db, userID, password)
+	if err != nil {
+		log.Print(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
-			"error": "Authentication failed",
+			"message": "User not exists",
 		})
 		return
 	}
@@ -42,35 +45,32 @@ func Register(c *gin.Context) {
 	userID := c.PostForm("userId")
 	password := c.PostForm("password")
 
-	// Check the parameters is not empty
 	if strings.Trim(name, " ") == "" || strings.Trim(userID, " ") == "" || strings.Trim(password, " ") == "" {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Parameter(s) can't be empty",
+			"message": "Parameter(s) can't be empty",
 		})
 		return
 	}
 
-	// Check the userID is unique
-	if !models.IsUniqueUserID(userID) {
+	db := utils.DBConnect()
+
+	if !models.IsUniqueUserID(db, userID) {
 		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "Duplicated",
+			"message": "Duplicate userId",
 		})
 		return
 	}
 
-	err := models.InsertUser(name, userID, password)
-
-	// If user insertion fails
+	err := models.InsertUser(db, name, userID, password)
 	if err != nil {
-		log.Print(err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Register failed",
+		c.JSON(http.StatusBadRequest, gin.H{
+			"message": "Insert user failed",
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "User created",
+		"message": "Register success",
 	})
 	return
 }
