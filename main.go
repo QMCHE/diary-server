@@ -6,10 +6,11 @@ import (
 )
 
 func main() {
+	gin.SetMode(gin.DebugMode)
 	r := gin.Default()
 
 	r.POST("/login", controllers.Login)
 	r.POST("/register", controllers.Register)
 
-	r.Run()
+	r.Run(":8080")
 }
