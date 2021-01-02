@@ -9,16 +9,18 @@ import (
 
 // Claims is struct that stores information from tokens
 type Claims struct {
-	id uint
+	id     uint
+	UserID string
 	jwt.StandardClaims
 }
 
 // CreateUserToken returns user's new token
-func CreateUserToken(id uint) (string, error) {
+func CreateUserToken(id uint, userID string) (string, error) {
 	expirationTime := 5 * time.Minute
 	key := []byte(os.Getenv("JWT_KEY"))
 	claims := &Claims{
-		id: id,
+		id:     id,
+		UserID: userID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: expirationTime.Milliseconds(),
 		},
