@@ -1,7 +1,6 @@
 package models_test
 
 import (
-	"log"
 	"testing"
 
 	"github.com/QMCHE/diary-server/models"
@@ -15,10 +14,8 @@ func TestIsUserExists(t *testing.T) {
 		Password: "1234",
 	}
 
-	err := user.IsUserExists(db)
-	if err != nil {
-		log.Print(err)
-		t.Error(err)
+	if !user.IsUserExists(db) {
+		t.Error("User not exists")
 	}
 }
 

@@ -3,6 +3,7 @@ package models
 import (
 	"crypto/sha512"
 	"encoding/hex"
+	"log"
 
 	"gorm.io/gorm"
 )
@@ -16,16 +17,11 @@ type User struct {
 	Diaries  []Diary `gorm:"foreignKey:ID;references:ID"`
 }
 
-// BeforeCreate is a function that performs password encryption before the user is saved
-func (u *User) BeforeCreate() {
-	encryptedPassword := encryptPassword(u.Password)
-	u.Password = encryptedPassword
-}
-
 // IsUserExists checks is user exists
-func (u *User) IsUserExists(db *gorm.DB) error {
+func (u *User) IsUserExists(db *gorm.DB) bool {
 	encryptedPassword := encryptPassword(u.Password)
-	return db.Model(User{}).Where("user_id = ? AND password = ?", u.UserID, encryptedPassword).Take(&u).Error
+	log.Print(db.Model(User{}).Where("user_id = ? AND password = ?", u.UserID, encryptedPassword).Take(&u).Error)
+	return db.Model(User{}).Where("user_id = ? AND password = ?", u.UserID, encryptedPassword).Take(&u).Error == nil
 }
 
 // IsUniqueUserID checks if the userId is unique
@@ -35,6 +31,7 @@ func (u *User) IsUniqueUserID(db *gorm.DB) bool {
 
 // CreateUser inserts user to db
 func (u *User) CreateUser(db *gorm.DB) error {
+	u.Password = encryptPassword(u.Password)
 	return db.Create(&u).Error
 }
 
