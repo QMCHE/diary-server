@@ -23,8 +23,12 @@ func Login(c *gin.Context) {
 	}
 
 	db := utils.DBConnect()
+	user := &models.User{
+		UserID:   userID,
+		Password: password,
+	}
 
-	err := models.IsUserExists(db, userID, password)
+	err := user.IsUserExists(db)
 	if err != nil {
 		log.Print(err)
 		c.JSON(http.StatusUnauthorized, gin.H{
@@ -33,8 +37,16 @@ func Login(c *gin.Context) {
 		return
 	}
 
+	token, err := utils.CreateUserToken(user.ID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Generate token failed",
+		})
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Login success",
+		"token":   token,
 	})
 	return
 }
@@ -53,15 +65,20 @@ func Register(c *gin.Context) {
 	}
 
 	db := utils.DBConnect()
+	user := &models.User{
+		Name:     name,
+		UserID:   userID,
+		Password: password,
+	}
 
-	if !models.IsUniqueUserID(db, userID) {
+	if !user.IsUniqueUserID(db) {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Duplicate userId",
 		})
 		return
 	}
 
-	err := models.InsertUser(db, name, userID, password)
+	err := user.CreateUser(db)
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{
 			"message": "Insert user failed",
