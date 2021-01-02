@@ -16,34 +16,26 @@ type User struct {
 	Diaries  []Diary `gorm:"foreignKey:ID;references:ID"`
 }
 
+// BeforeCreate is a function that performs password encryption before the user is saved
+func (u *User) BeforeCreate() {
+	encryptedPassword := encryptPassword(u.Password)
+	u.Password = encryptedPassword
+}
+
 // IsUserExists checks is user exists
-func IsUserExists(db *gorm.DB, userID, password string) error {
-	var user User
-	encryptedPassword := encryptPassword(password)
-	return db.Table("user").Find(&user).Where("userId = ? AND password = ?", userID, encryptedPassword).Error
+func (u *User) IsUserExists(db *gorm.DB) error {
+	encryptedPassword := encryptPassword(u.Password)
+	return db.Model(User{}).Where("user_id = ? AND password = ?", u.UserID, encryptedPassword).Take(&u).Error
 }
 
 // IsUniqueUserID checks if the userId is unique
-func IsUniqueUserID(db *gorm.DB, userID string) bool {
-	var id string
-	return db.Raw("SELECT id FROM user WHERE userId=?", userID).Row().Scan(&id) != nil
+func (u *User) IsUniqueUserID(db *gorm.DB) bool {
+	return db.Model(User{}).Where("user_id = ?", u.UserID).Take(&u).Error != nil
 }
 
-// InsertUser inserts user to db
-func InsertUser(db *gorm.DB, name, userID, password string) error {
-	encryptedPassword := encryptPassword(password)
-	user := User{
-		Name:     name,
-		UserID:   userID,
-		Password: encryptedPassword,
-		Diaries:  nil,
-	}
-	err := db.Create(&user).Error
-	if err != nil {
-		return err
-	}
-	err = db.Save(&user).Error
-	return err
+// CreateUser inserts user to db
+func (u *User) CreateUser(db *gorm.DB) error {
+	return db.Create(&u).Error
 }
 
 func encryptPassword(password string) string {
