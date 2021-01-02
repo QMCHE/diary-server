@@ -10,10 +10,10 @@ import (
 // User is struct of user
 type User struct {
 	gorm.Model
-	Name     string `gorm:"size:45;NOT NULL;" json:"name"`
-	UserID   string `gorm:"size:45;NOT NULL;" json:"userId"`
-	Password string `gorm:"size:1000;NOT NULL;" json:"password"`
-	Diaries  []Diary
+	Name     string  `gorm:"size:45;NOT NULL;" json:"name"`
+	UserID   string  `gorm:"size:45;NOT NULL;" json:"userId"`
+	Password string  `gorm:"size:1000;NOT NULL;" json:"password"`
+	Diaries  []Diary `gorm:"foreignKey:ID;references:UserID"`
 }
 
 // IsUserExists checks is user exists
