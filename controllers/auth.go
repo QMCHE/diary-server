@@ -1,9 +1,9 @@
 package controllers
 
 import (
-	"log"
 	"net/http"
 	"strings"
+	"time"
 
 	"github.com/QMCHE/diary-server/models"
 	"github.com/QMCHE/diary-server/utils"
@@ -28,25 +28,33 @@ func Login(c *gin.Context) {
 		Password: password,
 	}
 
-	err := user.IsUserExists(db)
-	if err != nil {
-		log.Print(err)
+	if !user.IsUserExists(db) {
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"message": "User not exists",
 		})
 		return
 	}
 
-	token, err := utils.CreateUserToken(user.ID)
+	accessToken, err := utils.GenerateAccessToken(user.ID, user.UserID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"message": "Generate token failed",
 		})
+		return
 	}
 
+	refreshToken, err := utils.GenerateRefreshToken(user.ID, user.UserID)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"message": "Generate token failed",
+		})
+		return
+	}
+
+	c.SetCookie("refreshToken", refreshToken, int(24*time.Hour*7), "/", "/", true, true)
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Login success",
-		"token":   token,
+		"token":   accessToken,
 	})
 	return
 }
