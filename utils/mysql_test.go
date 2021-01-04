@@ -9,13 +9,12 @@ import (
 func TestDBConnect(t *testing.T) {
 	db := utils.DBConnect()
 	sqlDB, err := db.DB()
-
 	if err != nil {
 		t.Error(err)
 	}
 
 	err = sqlDB.Ping()
 	if err != nil {
-		t.Error(err)
+		t.Error(nil)
 	}
 }

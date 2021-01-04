@@ -1,15 +1,27 @@
 package utils
 
 import (
+	"log"
 	"os"
 
 	"github.com/QMCHE/diary-server/models"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
 // DBConnect returns db object
 func DBConnect() *gorm.DB {
+	wd, err := os.Getwd()
+	if err != nil {
+		log.Print(err)
+	}
+
+	err = godotenv.Load(wd + "/.env")
+	if err != nil {
+		log.Print(err)
+	}
+
 	id := os.Getenv("ID")
 	password := os.Getenv("PASSWORD")
 	protocol := os.Getenv("PROTOCOL")
