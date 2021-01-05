@@ -32,12 +32,12 @@ func DBConnect() *gorm.DB {
 	dsn := id + ":" + password + "@" + protocol + "(" + DBAddress + ":" + DBPort + ")/" + DBName + "?charset=utf8mb4&parseTime=True&loc=Local"
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
-		panic(err)
+		log.Print(err)
 	}
 
 	err = db.AutoMigrate(&models.User{}, &models.Diary{})
 	if err != nil {
-		panic(err)
+		log.Print(err)
 	}
 
 	return db
