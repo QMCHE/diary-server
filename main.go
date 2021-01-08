@@ -17,8 +17,9 @@ func main() {
 	}
 
 	diary := r.Group("/diary")
+	diary.Use(middlewares.VerifyToken())
 	{
-		diary.POST("/create", middlewares.VerifyToken, controllers.CreateDiary)
+		diary.POST("/create", controllers.CreateDiary)
 	}
 
 	r.Run(":8080")
