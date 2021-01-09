@@ -35,7 +35,6 @@ func GenerateRefreshToken(user *models.User) (string, error) {
 	claims := &Claims{
 		IsAdmin: user.IsAdmin,
 		StandardClaims: jwt.StandardClaims{
-			Issuer:    "localhost",
 			ExpiresAt: expirationTime,
 		},
 	}
