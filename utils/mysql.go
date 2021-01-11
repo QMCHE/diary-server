@@ -11,7 +11,7 @@ import (
 )
 
 // DBConnect returns db object
-func DBConnect() *gorm.DB {
+func DBConnect() (*gorm.DB, error) {
 	wd, err := os.Getwd()
 	if err != nil {
 		log.Print(err)
@@ -33,12 +33,14 @@ func DBConnect() *gorm.DB {
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Print(err)
+		return nil, err
 	}
 
 	err = db.AutoMigrate(&models.User{}, &models.Diary{})
 	if err != nil {
 		log.Print(err)
+		return nil, err
 	}
 
-	return db
+	return db, nil
 }
