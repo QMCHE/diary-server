@@ -37,9 +37,15 @@ func (u *User) CreateUser(db *gorm.DB) error {
 	return db.Create(&u).Error
 }
 
-// func GetUserByUserID(db *gorm.DB, userID string) {
-// 	db.Model(&User{}).Where("user_id = ?", userID)
-// }
+// GetUserByID finds user by id
+func (u *User) GetUserByID(db *gorm.DB) error {
+	return db.Model(&User{}).Where("id = ?", u.ID).Find(&u).Error
+}
+
+// GetUserByUserID finds user by userid
+func (u *User) GetUserByUserID(db *gorm.DB) error {
+	return db.Model(&User{}).Where("user_id = ?", u.UserID).Find(&u).Error
+}
 
 func encryptPassword(password string) string {
 	sha := sha512.New()
