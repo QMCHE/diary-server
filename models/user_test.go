@@ -8,19 +8,27 @@ import (
 )
 
 func TestIsUserExists(t *testing.T) {
-	db := utils.DBConnect()
+	db, err := utils.DBConnect()
+	if err != nil {
+		t.Error(err)
+	}
+
 	user := &models.User{
 		Name:     "test",
 		Password: "1234",
 	}
 
-	if !user.IsUserExists(db) {
+	if !user.IsExists(db) {
 		t.Error("User not exists")
 	}
 }
 
 func TestIsUniqueUserID(t *testing.T) {
-	db := utils.DBConnect()
+	db, err := utils.DBConnect()
+	if err != nil {
+		t.Error(err)
+	}
+
 	user := &models.User{
 		UserID: "test",
 	}
@@ -31,14 +39,18 @@ func TestIsUniqueUserID(t *testing.T) {
 }
 
 func TestInsertUser(t *testing.T) {
-	db := utils.DBConnect()
+	db, err := utils.DBConnect()
+	if err != nil {
+		t.Error(err)
+	}
+
 	user := &models.User{
 		Name:     "test",
 		UserID:   "test",
 		Password: "1234",
 	}
 
-	err := user.CreateUser(db)
+	err = user.Create(db)
 	if err != nil {
 		t.Error(err)
 	}

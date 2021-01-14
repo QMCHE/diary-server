@@ -7,7 +7,10 @@ import (
 )
 
 func TestDBConnect(t *testing.T) {
-	db := utils.DBConnect()
+	db, err := utils.DBConnect()
+	if err != nil {
+		t.Error(err)
+	}
 	sqlDB, err := db.DB()
 	if err != nil {
 		t.Error(err)
