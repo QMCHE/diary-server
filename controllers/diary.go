@@ -83,10 +83,49 @@ func CreateDiary(c *gin.Context) {
 		UserID:  claims.(*utils.Claims).ID,
 	}
 
-	err = diary.InsertDiary(db)
+	err = diary.Create(db)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Diary inserts failed",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"diary": diary,
+	})
+	return
+}
+
+// UpdateDiary updates diary
+func UpdateDiary(c *gin.Context) {
+	idString, _ := strconv.Atoi(c.PostForm("id"))
+	id := uint(idString)
+	// title := c.PostForm("title")
+	// content := c.PostForm("content")
+
+	db, err := utils.DBConnect()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to connect database",
+		})
+		return
+	}
+
+	diary := &models.Diary{
+		ID: id,
+	}
+	// err = diary.GetDiaryByID(db)
+	// if err != nil {
+	// 	c.JSON(http.StatusInternalServerError, gin.H{
+	// 		"error": "Failed to get diary",
+	// 	})
+	// 	return
+	// }
+	err = diary.Update(db)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Failed to update diary",
 		})
 		return
 	}

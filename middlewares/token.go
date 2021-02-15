@@ -1,7 +1,6 @@
 package middlewares
 
 import (
-	"log"
 	"net/http"
 	"strings"
 
@@ -21,17 +20,16 @@ func VerifyToken() gin.HandlerFunc {
 			return
 		}
 
-		if utils.IsExpired(tokenString.Value) {
-			c.JSON(http.StatusUnauthorized, gin.H{
-				"error": "Token is expired",
-			})
-			c.Abort()
-			return
-		}
+		// if utils.IsExpired(tokenString.Value) {
+		// 	c.JSON(http.StatusUnauthorized, gin.H{
+		// 		"error": "Token is expired",
+		// 	})
+		// 	c.Abort()
+		// 	return
+		// }
 
 		claims, err := utils.VerifyToken(tokenString.Value)
 		if err != nil {
-			log.Print(err)
 			c.JSON(http.StatusUnauthorized, gin.H{
 				"error": "Invalid token",
 			})

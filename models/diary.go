@@ -28,17 +28,22 @@ func GetDiary(db *gorm.DB, sort, direction string, perPage, page int) ([]Diary, 
 	return diaries, nil
 }
 
-// InsertDiary inserts diary
-func (d *Diary) InsertDiary(db *gorm.DB) error {
+// Create inserts diary
+func (d *Diary) Create(db *gorm.DB) error {
 	return db.Create(&d).Error
 }
 
-// UpdateDiary updates diary
-func (d *Diary) UpdateDiary(db *gorm.DB) error {
+// Update updates diary
+func (d *Diary) Update(db *gorm.DB) error {
 	return db.Save(&d).Error
 }
 
-// DeleteDiary deletes diary
-func (d *Diary) DeleteDiary(db *gorm.DB) error {
+// Delete deletes diary
+func (d *Diary) Delete(db *gorm.DB) error {
 	return db.Delete(&d).Error
+}
+
+// GetDiaryByID finds diary by id and returns error
+func (d *Diary) GetDiaryByID(db *gorm.DB) error {
+	return db.Model(&Diary{}).Where("id = ?", d.ID).Find(&d).Error
 }

@@ -20,8 +20,8 @@ type User struct {
 	IsAdmin   bool            `gorm:"default:false;NOT NULL;" json:"isAdmin"`
 }
 
-// IsUserExists checks is user exists
-func (u *User) IsUserExists(db *gorm.DB) bool {
+// IsExists checks is user exists
+func (u *User) IsExists(db *gorm.DB) bool {
 	encryptedPassword := encryptPassword(u.Password)
 	return db.Model(User{}).Where("user_id = ? AND password = ?", u.UserID, encryptedPassword).Take(&u).Error == nil
 }
@@ -31,10 +31,21 @@ func (u *User) IsUniqueUserID(db *gorm.DB) bool {
 	return db.Model(User{}).Where("user_id = ?", u.UserID).Take(&u).Error != nil
 }
 
-// CreateUser inserts user to db
-func (u *User) CreateUser(db *gorm.DB) error {
+// Create inserts user to db
+func (u *User) Create(db *gorm.DB) error {
 	u.Password = encryptPassword(u.Password)
 	return db.Create(&u).Error
+}
+
+// Update updates user
+func (u *User) Update(db *gorm.DB) error {
+	u.Password = encryptPassword(u.Password)
+	return db.Save(&u).Error
+}
+
+// Delete deletes user
+func (u *User) Delete(db *gorm.DB) error {
+	return db.Delete(&u).Error
 }
 
 // GetUserByID finds user by id
@@ -42,7 +53,7 @@ func (u *User) GetUserByID(db *gorm.DB) error {
 	return db.Model(&User{}).Where("id = ?", u.ID).Find(&u).Error
 }
 
-// GetUserByUserID finds user by userid
+// GetUserByUserID finds user by userid and returns error
 func (u *User) GetUserByUserID(db *gorm.DB) error {
 	return db.Model(&User{}).Where("user_id = ?", u.UserID).Find(&u).Error
 }
